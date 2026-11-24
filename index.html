@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Zhandarbek — С Новым 2027 Годом!</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-deep: #070d1f;
+      --bg-card: rgba(15, 27, 56, 0.85);
+      --gold: #f5d076;
+      --gold-dark: #c99b3b;
+      --gold-glow: rgba(245, 208, 118, 0.35);
+      --text-main: #f8fafc;
+      --text-muted: #cbd5e1;
+      --border-gold: rgba(245, 208, 118, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      font-family: 'Montserrat', sans-serif;
+      background: radial-gradient(circle at 50% 15%, #162b5c 0%, #091229 55%, #040814 100%);
+      color: var(--text-main);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    #snowCanvas {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .brand-bar {
+      position: fixed;
+      top: 16px;
+      left: 20px;
+      right: 20px;
+      z-index: 20;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      pointer-events: none;
+    }
+
+    .brand-logo {
+      pointer-events: auto;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      color: var(--gold);
+      text-shadow: 0 2px 12px var(--gold-glow);
+      background: rgba(10, 19, 42, 0.7);
+      border: 1px solid var(--border-gold);
+      padding: 6px 16px;
+      border-radius: 999px;
+      backdrop-filter: blur(8px);
+    }
+
+    .top-actions {
+      pointer-events: auto;
+      display: flex;
+      gap: 10px;
+    }
+
+    .icon-btn {
+      background: rgba(10, 19, 42, 0.75);
+      border: 1px solid var(--border-gold);
+      color: var(--gold);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all 0.25s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .icon-btn:hover {
+      background: rgba(245, 208, 118, 0.18);
+      transform: translateY(-1px);
+    }
+
+    /* ЭКРАН 1: КОНВЕРТ */
+    .envelope-stage {
+      position: relative;
+      z-index: 10;
+      text-align: center;
+      max-width: 440px;
+      width: 100%;
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .envelope-stage.hidden {
+      opacity: 0;
+      transform: scale(0.9) translateY(-20px);
+      pointer-events: none;
+      position: absolute;
+    }
+
+    .envelope-box {
+      background: linear-gradient(145deg, #162955, #0c1733);
+      border: 1.5px solid var(--gold);
+      border-radius: 24px;
+      padding: 42px 28px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), 0 0 35px var(--gold-glow);
+      cursor: pointer;
+      transition: transform 0.35s ease, box-shadow 0.35s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .envelope-box:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 30px 70px rgba(0, 0, 0, 0.75), 0 0 50px rgba(245, 208, 118, 0.5);
+    }
+
+    .wax-seal {
+      width: 82px;
+      height: 82px;
+      margin: 0 auto 22px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #ffe69e, #d49b2a 70%, #8f6310 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      color: #1c1202;
+      box-shadow: 0 8px 25px rgba(212, 155, 42, 0.5);
+      animation: pulse 2.2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.07); }
+    }
+
+    .envelope-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    .envelope-sub {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    .open-btn {
+      background: linear-gradient(135deg, #f7d782, #c99632);
+      color: #0b132b;
+      border: none;
+      padding: 13px 28px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      box-shadow: 0 6px 20px rgba(245, 208, 118, 0.35);
+      transition: transform 0.2s ease;
+    }
+
+    .open-btn:hover {
+      transform: scale(1.04);
+    }
+
+    /* ЭКРАН 2: ОТКРЫТКА */
+    .card-stage {
+      position: relative;
+      z-index: 10;
+      max-width: 680px;
+      width: 100%;
+      margin-top: 56px;
+      opacity: 0;
+      transform: translateY(25px) scale(0.96);
+      pointer-events: none;
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+
+    .card-stage.visible {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: auto;
+    }
+
+    .greeting-card {
+      background: var(--bg-card);
+      border: 1.5px solid var(--border-gold);
+      border-radius: 28px;
+      padding: 36px 28px;
+      backdrop-filter: blur(14px);
+      box-shadow: 0 25px 70px rgba(0, 0, 0, 0.65), inset 0 0 40px rgba(245, 208, 118, 0.06);
+      text-align: center;
+    }
+
+    .year-badge {
+      display: inline-block;
+      padding: 6px 18px;
+      border-radius: 999px;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 18px;
+      background: rgba(245, 208, 118, 0.08);
+    }
+
+    .photo-frame {
+      width: 220px;
+      height: 270px;
+      margin: 0 auto 24px;
+      border-radius: 22px;
+      padding: 6px;
+      background: linear-gradient(135deg, #ffe7a3, #b58222, #f5d076);
+      box-shadow: 0 14px 35px rgba(0, 0, 0, 0.55), 0 0 28px var(--gold-glow);
+      position: relative;
+    }
+
+    .photo-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 17px;
+      display: block;
+      background: #0d1938;
+    }
+
+    .card-heading {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1.15;
+      margin-bottom: 16px;
+      text-shadow: 0 2px 15px rgba(245, 208, 118, 0.25);
+    }
+
+    .card-message {
+      font-size: 1.02rem;
+      line-height: 1.75;
+      color: var(--text-main);
+      max-width: 560px;
+      margin: 0 auto 26px;
+    }
+
+    .wishes-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 26px;
+    }
+
+    .wish-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(245, 208, 118, 0.25);
+      border-radius: 16px;
+      padding: 14px 10px;
+    }
+
+    .wish-pill span {
+      display: block;
+      font-size: 1.4rem;
+      margin-bottom: 6px;
+    }
+
+    .wish-pill p {
+      font-size: 0.84rem;
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    .signature {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.45rem;
+      color: var(--gold);
+      margin-top: 8px;
+    }
+
+    /* МОДАЛЬНОЕ ОКНО НАСТРОЕК */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 7, 18, 0.82);
+      backdrop-filter: blur(6px);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: #0f1c3d;
+      border: 1px solid var(--gold);
+      border-radius: 22px;
+      max-width: 460px;
+      width: 100%;
+      padding: 24px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+
+    .modal h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+
+    .field {
+      margin-bottom: 14px;
+      text-align: left;
+    }
+
+    .field label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .field input, .field textarea {
+      width: 100%;
+      background: rgba(7, 13, 31, 0.85);
+      border: 1px solid rgba(245, 208, 118, 0.35);
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+    }
+
+    .field textarea {
+      min-height: 85px;
+      resize: vertical;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn-primary {
+      flex: 1;
+      background: linear-gradient(135deg, #f7d782, #c99632);
+      color: #0b132b;
+      border: none;
+      padding: 11px;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 11px 16px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--gold);
+      color: #091229;
+      padding: 10px 22px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      z-index: 60;
+      transition: transform 0.3s ease;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 540px) {
+      .wishes-grid {
+        grid-template-columns: 1fr;
+      }
+      .photo-frame {
+        width: 190px;
+        height: 235px;
+      }
+      .greeting-card {
+        padding: 28px 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="snowCanvas"></canvas>
+
+  <header class="brand-bar">
+    <div class="brand-logo">✨ Zhandarbek</div>
+    <div class="top-actions">
+      <button class="icon-btn" id="shareBtn" title="Скопировать ссылку">🔗 Поделиться</button>
+      <button class="icon-btn" id="editBtn" title="Настроить открытку">⚙️</button>
+    </div>
+  </header>
+
+  <!-- ЭКРАН 1: КОНВЕРТ -->
+  <section class="envelope-stage" id="envelopeStage">
+    <div class="envelope-box" id="openEnvelope">
+      <div class="wax-seal">🎄</div>
+      <h1 class="envelope-title">Новогоднее поздравление</h1>
+      <p class="envelope-sub">Персональная открытка и тёплые пожелания от <strong>Zhandarbek</strong> специально для вас</p>
+      <button class="open-btn" type="button">Открыть открытку ✨</button>
+    </div>
+  </section>
+
+  <!-- ЭКРАН 2: ОТКРЫТКА -->
+  <main class="card-stage" id="cardStage">
+    <article class="greeting-card">
+      <div class="year-badge">✨ С Новым 2027 Годом ✨</div>
+
+      <div class="photo-frame">
+        <!-- Сюда можно поставить прямую ссылку на ваше фото (например с postimages.org) -->
+        <img id="cardPhoto" src="photo.jpg" alt="Zhandarbek" onerror="this.src='https://images.unsplash.com/photo-1543589077-47d81606c1bf?auto=format&fit=crop&w=600&q=80'" />
+      </div>
+
+      <h2 class="card-heading" id="cardTitle">С Новым Годом!</h2>
+      <p class="card-message" id="cardText">
+        Пусть 2027 год принесёт в ваш дом яркие победы, крепкое здоровье, искреннюю радость и исполнение самых смелых желаний! Пусть каждый день будет наполнен теплом близких и новыми возможностями.
+      </p>
+
+      <div class="wishes-grid">
+        <div class="wish-pill">
+          <span>🌟</span>
+          <p>Больших побед</p>
+        </div>
+        <div class="wish-pill">
+          <span>💛</span>
+          <p>Счастья и тепла</p>
+        </div>
+        <div class="wish-pill">
+          <span>🚀</span>
+          <p>Новых высот</p>
+        </div>
+      </div>
+
+      <div class="signature" id="cardSign">С наилучшими пожеланиями, Zhandarbek</div>
+    </article>
+  </main>
+
+  <!-- НАСТРОЙКИ -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal">
+      <h3>Настроить открытку</h3>
+      <div class="field">
+        <label>Заголовок</label>
+        <input type="text" id="inputTitle" />
+      </div>
+      <div class="field">
+        <label>Текст поздравления</label>
+        <textarea id="inputText"></textarea>
+      </div>
+      <div class="field">
+        <label>Прямая ссылка на фото (URL) или имя файла (например: photo.jpg)</label>
+        <input type="text" id="inputPhotoUrl" placeholder="photo.jpg или https://..." />
+      </div>
+      <div class="field">
+        <label>Подпись</label>
+        <input type="text" id="inputSign" />
+      </div>
+      <div class="modal-actions">
+        <button class="btn-secondary" id="closeModalBtn" type="button">Закрыть</button>
+        <button class="btn-primary" id="saveBtn" type="button">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Ссылка скопирована! 🔗</div>
+
+  <script>
+    const defaultData = {
+      title: "С Новым 2027 Годом!",
+      text: "Пусть 2027 год принесёт в ваш дом яркие победы, крепкое здоровье, искреннюю радость и исполнение самых смелых желаний! Пусть каждый день будет наполнен теплом близких и новыми возможностями.",
+      photo: "photo.jpg",
+      sign: "С наилучшими пожеланиями, Zhandarbek
